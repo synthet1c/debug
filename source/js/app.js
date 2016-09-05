@@ -9,8 +9,6 @@ import { actions } from './actions'
 console.log('here', { data })
 
 ReactDOM.render(
-  <div>
-    <Container store={store} />
-  </div>,
+  <Container store={store} />,
   document.getElementById('app')
 )

@@ -43,7 +43,9 @@ export const lens = curry((props, fn) => {
 export const reduceData = data => {
   const go = (obj) => {
     for (let key in obj) {
-      const prop = obj[key] && (obj[key].value || obj[key])
+      const prop = obj[key] && (typeof obj[key].value !== 'undefined')
+        ? obj[key].value
+        : obj[key]
       if (typeof prop !== 'undefined') {
         obj[key] = prop
       }
