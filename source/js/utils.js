@@ -29,6 +29,10 @@ export const define = (name, value) => window[name] = value || name
 
 export const set = curry((val, __) => val)
 
+export const isType = type => thing => typeof(thing) !== 'undefined' && typeof(thing) === type
+export const isObject = isType('object')
+export const isArray = Array.isArray
+
 export const lens = curry((props, fn) => {
   if (typeof props === 'string') {
     props = props.split('.')

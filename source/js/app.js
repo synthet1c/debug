@@ -5,6 +5,7 @@ import { data, store } from './data'
 import { Container } from './reflex'
 import { reduceData } from './utils'
 import { actions } from './actions'
+import './tree'
 
 console.log('here', { data })
 
