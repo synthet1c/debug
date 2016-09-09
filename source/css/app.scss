@@ -1,0 +1,42 @@
+@mixin clear() {
+  content: '';
+  display: table;
+  clear: both;
+}
+
+.json {
+
+  ul {
+    padding-left: .8em;
+  }
+
+  li {
+    list-style-type: none;
+  }
+
+  .json-item {
+    @include clear;
+  }
+
+  .json-object {
+    @include clear;
+    display: inline;
+    &::before {
+      content: '{';
+    }
+    &::after {
+      content: '}';
+    }
+  }
+
+  .json-array {
+    @include clear;
+    &::before {
+      content: '[';
+      float: left;
+    }
+    &::after {
+      content: ']';
+    }
+  }
+}

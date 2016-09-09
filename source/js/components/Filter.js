@@ -61,10 +61,14 @@ const defineEvents = ({ dispatch, props }) => ({
   }
 })
 
-const defineProps = ({ state, props }) => ({
-  items: state[props.type],
-  type: props.type
-})
+const defineProps = ({ state, props }) => {
+
+  debugger;
+  return ({
+    items: state[props.type],
+    type: props.type
+  })
+}
 
 export const Filter = component(
   defineEvents,

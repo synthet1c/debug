@@ -1,8 +1,25 @@
 import { reduceData } from './utils'
 import { actions } from './actions'
 import { Store } from './reflex/Store'
+import { flattenTree } from './tree'
 
 export const data = {
+  user: {
+    name: 'andrew',
+    age: 32,
+    languages: [
+      { name: 'javascript' },
+      { name: 'php' },
+      { name: 'node' },
+      { name: 'laravel' },
+    ],
+    hobbies: [
+      { name: 'javascript' },
+    ]
+  }
+}
+
+export const __data = {
   "SCRIPT_NAME": {
     "value": "/index.php",
     "nocache": false,
@@ -3589,5 +3606,7 @@ export const data = {
   }
 }
 
-export const store = Store(reduceData(data), actions)
+const flatData = flattenTree(data)
+console.log({ flatData })
+export const store = Store({ user: flatData }, actions)
 export default store

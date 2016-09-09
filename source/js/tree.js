@@ -1,23 +1,9 @@
+import React from 'react'
+
 import {
   isArray,
   isObject
 } from './utils'
-
-const data = {
-  user: {
-    name: 'andrew',
-    age: 32,
-    languages: [
-      { name: 'javascript' },
-      { name: 'php' },
-      { name: 'node' },
-      { name: 'laravel' },
-    ],
-    hobbies: [
-      { name: 'javascript' },
-    ]
-  }
-}
 
 export const flattenTree = (tree) => {
   const ret = []
@@ -31,6 +17,7 @@ export const flattenTree = (tree) => {
           type: 'array',
           id,
           value: 'array',
+          children: leaf,
           key,
           tail: false,
           parent
@@ -42,6 +29,7 @@ export const flattenTree = (tree) => {
           type: 'object',
           id: id,
           value: 'object',
+          children: leaf,
           key,
           tail: false,
           parent
@@ -63,9 +51,9 @@ export const flattenTree = (tree) => {
   return ret
 }
 
-console.log({
-  flattenTree: flattenTree(data)
-})
+// console.log({
+//   flattenTree: flattenTree(data)
+// })
 
 export const searchTree = (search, flatTree) => {
   const matches = flatTree
@@ -93,59 +81,79 @@ export const findPath = flatTree => item => {
   return ret.reverse()
 }
 
-const flatTree = flattenTree(data)
+// const flatTree = flattenTree(data)
 
-export const creatObject = item => {
-  switch (item.type) {
-    case 'object':
-      let obj = {}
-      obj[item.key] = item.value
-    case 'array':
-      let arr = []
-      arr[Number(item.key)] = item.value
-    default:
-      return item.value
-  }
-}
-
-export const createStructure = (items) => {
-  let ii = 0
-  const go = (self) => {
-    const item = path[ii]
+export const createPath = (path) => {
+  const ret = {}
+  path.reduce((acc, item) => {
     switch (item.type) {
       case 'object':
-        self[item.key] = {}
+        acc[item.key] = {}
+        break
       case 'array':
-        self[item.key] = []
+        acc[item.key] = []
+        break
       default:
-        self[item.key] = item.value
+        acc[item.key] = item.value
     }
-    if (items[ii++]) {
-      return go(self)
-    }
-  }
-  return go({})
-}
-
-export const createPath = path => {
-  let ret = {}
-  let curr = {}
-  for (let ii = 0, ll = path.length; ii < ll; ii+=1) {
-    const item = path[ii]
-    switch (item.type) {
-      case 'object':
-        ret[item.key] = {}
-      case 'array':
-        ret[item.key] = []
-      default:
-        ret[item.key] = item.value
-    }
-  }
+    return acc[item.key]
+  }, ret)
   return ret
 }
 
-console.log({
-  flatTree,
-  searchTree: searchTree('javascript', flatTree),
-  createPath: flatTree.map(createPath)
-})
+const type = (thing) => {
+  if (thing === null) {
+    return 'null'
+  } else if (thing === undefined) {
+    return 'undefined'
+  } else if (Array.isArray(thing)) {
+    return 'array'
+  } else {
+    return typeof(thing)
+  }
+}
+
+export const createPathHTML = (tree) => {
+  const go = (key, value) => {
+    switch (type(value)) {
+      case 'object':
+        return (
+          <span className="json-item">
+            <span className="json-key">{key}</span>
+            <span className="json-object">
+              {createPathHTML(value)}
+            </span>
+          </span>
+        )
+      case 'array':
+        return (
+          <span className="json-item">
+            <span className="json-key">{key}</span>
+            <span className="json-array">
+              {createPathHTML(value)}
+            </span>
+          </span>
+        )
+      default:
+        return (
+          <span className="json-value">
+            <span className="json-key">{key}</span>
+            <span className="json-value">{value}</span>
+          </span>
+        )
+    }
+  }
+
+  const keys = Object.keys(tree)
+
+  return (
+    keys.map(key => go(key, tree[key]))
+  )
+}
+
+// const path = searchTree('php', flatTree)
+// console.log({
+//   flatTree,
+//   searchTree: searchTree('javascript', flatTree),
+//   createPath: path.map(createPath)
+// })
