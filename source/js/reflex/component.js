@@ -4,6 +4,10 @@ import { pinkLog, diff } from '../utils'
 export const component = (...internals) => fn => store => {
   return React.createClass({
     displayName: fn.name,
+    getInitialState() {
+      this.store = store
+      return {}
+    },
     componentDidMount() {
       pinkLog('componentDidMount', this)
       this.__state = store.getState()

@@ -138,3 +138,28 @@ body {
   padding-right: 6px;
   padding-left: 6px;
 }
+
+.filter {
+
+}
+.filter__header {
+
+}
+.form__field {
+
+}
+.form__input {
+  width: 100%;
+  background: $color-background-hover;
+  color: $color-white;
+  border-size: 1px;
+  border-style: solid;
+  border-color: lighten($color-background-hover, 10%);
+  outline: none;
+  padding: .5em;
+  font-size: 1.5em;
+}
+.form__label {
+  color: darken($color-white, 30%);
+  font-weight: bold;
+}

@@ -1,6 +1,5 @@
 import { reduceData } from './utils'
 import { actions } from './actions'
-import { Store } from './reflex/Store'
 import { flattenTree } from './tree'
 
 export const data = {
@@ -19,6 +18,8 @@ export const data = {
     ]
   }
 }
+
+data.user.languages[10] = { name: 'scss' }
 
 export const __data = {
   "SCRIPT_NAME": {
@@ -3609,5 +3610,3 @@ export const __data = {
 
 const flatData = flattenTree(data)
 console.log({ flatData })
-export const store = Store({ user: flatData }, actions)
-export default store

@@ -1,9 +1,30 @@
 import React from 'react'
-
+import { component } from './reflex'
+import { Store } from './reflex/Store'
+import { actions } from './actions'
 import {
   isArray,
   isObject
 } from './utils'
+
+export const data = {
+  user: {
+    name: 'andrew',
+    age: 32,
+    nully: null,
+    languages: [
+      { name: 'javascript' },
+      { name: 'php' },
+      { name: 'node' },
+      { name: 'laravel' },
+    ],
+    hobbies: [
+      { name: 'javascript' },
+    ]
+  }
+}
+
+export const store = Store(data, actions)
 
 export const flattenTree = (tree) => {
   const ret = []
@@ -113,7 +134,7 @@ const type = (thing) => {
   }
 }
 
-const Name = ({ name, keepName }) => {
+const JsonName = function({ name, keepName }) {
   return !keepName
     ? null
     : (
@@ -124,12 +145,12 @@ const Name = ({ name, keepName }) => {
       )
 }
 
-const JsonObject = (props) => {
+const JsonObject = function(props) {
   const { name, value, keepName } = props
   return (
     <li>
       <div className="hoverable">
-        <Name {...props} />
+        <JsonName {...props} />
         <div className="collapser"></div>&#123;<span className="ellipsis"></span>
         <ul className="obj collapsible">
           {createPathHTML(value, true)}
@@ -140,12 +161,12 @@ const JsonObject = (props) => {
   )
 }
 
-const JsonArray = (props) => {
+const JsonArray = function(props) {
   const { name, value, keepName } = props
   return (
     <li>
       <div className="hoverable">
-        <Name {...props} />
+        <JsonName {...props} />
         <div className="collapser"></div>[<span className="ellipsis">Array[{value.length}]</span>
         <ul className="array collapsible">
           {createPathHTML(value, false)}
@@ -156,31 +177,31 @@ const JsonArray = (props) => {
   )
 }
 
-const JsonString = (props) => {
+const JsonString = function(props) {
   const { name, value, keepName } = props
   return (
     <li>
       <div className="hoverable">
-        <Name {...props} />
+        <JsonName {...props} />
         <span className={'type-' + type(value)}>"{value}"</span>
       </div>,
     </li>
   )
 }
 
-const JsonNull = (props) => {
+const JsonNull = function(props) {
   const { name, value, keepName } = props
   return (
     <li>
       <div className="hoverable">
-        <Name {...props} />
+        <JsonName {...props} />
         <span className={'type-' + type(value)}>null</span>
       </div>,
     </li>
   )
 }
 
-const JsonDefault = ({ name, value }) => {
+const JsonDefault = function({ name, value }) {
   return (
     <li>
       <div className="hoverable">
@@ -244,6 +265,50 @@ export const createPathHTML = (tree, keepName = true) => {
     keys.map(name => go(name, tree[name]))
   )
 }
+
+export const JsonFilter = ({ tree, filter }) => (
+  <div className="filter">
+    <div className="filter__header">
+      <div className="form__field">
+        <label className="form__label" htmlFor="filter">Filter</label>
+        <input className="form__input"
+          id="filter"
+          type="text"
+          onKeyUp={filter}/>
+      </div>
+    </div>
+    <ul className="json">
+      {createPathHTML(tree)}
+    </ul>
+  </div>
+)
+
+const defineEvents = ({ dispatch, props }) => ({
+  filter: event => {
+    dispatch(FILTER_BY_TYPE, {
+      search: event.target.value,
+      type: props.type,
+    })
+  }
+})
+
+const defineProps = ({ state, props }) => {
+  console.log('defineProps', { state })
+  return ({
+    tree: state,
+    items: state[props.type],
+    type: props.type
+  })
+}
+
+export const Filter = component(
+  defineEvents,
+  defineProps
+)(JsonFilter)(store)
+
+console.log({ Filter })
+
+export default Filter
 
 // const path = searchTree('php', flatTree)
 // console.log({

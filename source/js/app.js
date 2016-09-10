@@ -2,12 +2,12 @@ import '../css/app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import App from './components/App'
-import { data, store } from './data'
+import { data } from './data'
 import { Container } from './reflex'
 import { reduceData } from './utils'
+import { Filter } from './tree'
+import { Store } from './reflex/Store'
 import { actions } from './actions'
-import { createPathHTML } from './tree'
-
 
 // ReactDOM.render(
 //   <Container store={store} />,
@@ -15,8 +15,6 @@ import { createPathHTML } from './tree'
 // )
 
 ReactDOM.render(
-  <ul className="json">
-    {createPathHTML(data)}
-  </ul>,
+  <Filter store={data} type='user' />,
   document.getElementById('app')
 )
