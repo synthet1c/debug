@@ -113,33 +113,127 @@ const type = (thing) => {
   }
 }
 
-export const createPathHTML = (tree) => {
-  const go = (key, value) => {
+const Name = ({ name, keepName }) => {
+  return !keepName
+    ? null
+    : (
+        <span className="key">
+          <span className="property">{name}</span>
+          <span className="colon">:</span>
+        </span>
+      )
+}
+
+const JsonObject = (props) => {
+  const { name, value, keepName } = props
+  return (
+    <li>
+      <div className="hoverable">
+        <Name {...props} />
+        <div className="collapser"></div>&#123;<span className="ellipsis"></span>
+        <ul className="obj collapsible">
+          {createPathHTML(value, true)}
+        </ul>
+        &#125;,
+      </div>
+    </li>
+  )
+}
+
+const JsonArray = (props) => {
+  const { name, value, keepName } = props
+  return (
+    <li>
+      <div className="hoverable">
+        <Name {...props} />
+        <div className="collapser"></div>[<span className="ellipsis">Array[{value.length}]</span>
+        <ul className="array collapsible">
+          {createPathHTML(value, false)}
+        </ul>
+        ],
+      </div>
+    </li>
+  )
+}
+
+const JsonString = (props) => {
+  const { name, value, keepName } = props
+  return (
+    <li>
+      <div className="hoverable">
+        <Name {...props} />
+        <span className={'type-' + type(value)}>"{value}"</span>
+      </div>,
+    </li>
+  )
+}
+
+const JsonNull = (props) => {
+  const { name, value, keepName } = props
+  return (
+    <li>
+      <div className="hoverable">
+        <Name {...props} />
+        <span className={'type-' + type(value)}>null</span>
+      </div>,
+    </li>
+  )
+}
+
+const JsonDefault = ({ name, value }) => {
+  return (
+    <li>
+      <div className="hoverable">
+        <span className="property">{name}</span>
+        <span className="colon">:</span>
+        <span className={'type-' + type(value)}>{value}</span>
+      </div>,
+    </li>
+  )
+}
+
+export const createPathHTML = (tree, keepName = true) => {
+  let ii = 0
+  const go = (name, value) => {
     switch (type(value)) {
       case 'object':
         return (
-          <span className="json-item">
-            <span className="json-key">{key}</span>
-            <span className="json-object">
-              {createPathHTML(value)}
-            </span>
-          </span>
+          <JsonObject
+            name={name}
+            value={value}
+            keepName={keepName}
+            key={ii++} />
         )
       case 'array':
         return (
-          <span className="json-item">
-            <span className="json-key">{key}</span>
-            <span className="json-array">
-              {createPathHTML(value)}
-            </span>
-          </span>
+          <JsonArray
+            name={name}
+            value={value}
+            keepName={keepName}
+            key={ii++} />
+        )
+      case 'string':
+        return (
+          <JsonString
+            name={name}
+            value={value}
+            keepName={keepName}
+            key={ii++} />
+        )
+      case 'null':
+        return (
+          <JsonNull
+            name={name}
+            value={value}
+            keepName={keepName}
+            key={ii++} />
         )
       default:
         return (
-          <span className="json-value">
-            <span className="json-key">{key}</span>
-            <span className="json-value">{value}</span>
-          </span>
+          <JsonDefault
+            name={name}
+            value={value}
+            key={ii++} />
         )
     }
   }
@@ -147,7 +241,7 @@ export const createPathHTML = (tree) => {
   const keys = Object.keys(tree)
 
   return (
-    keys.map(key => go(key, tree[key]))
+    keys.map(name => go(name, tree[name]))
   )
 }
 

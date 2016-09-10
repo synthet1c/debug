@@ -4,39 +4,137 @@
   clear: both;
 }
 
-.json {
+$color-teal: #56b6c2;
+$color-purple: #c678dd;
+$color-blue: #61afef;
+$color-orange: #d19a66;
+$color-green: #98c379;
+$color-background: #282c34;
+$color-background-hover: rgba(153, 187, 255, 0.04);
+$color-white: #abb2bf;
+$color-red: #e06c75;
 
-  ul {
-    padding-left: .8em;
-  }
+body {
+	margin-bottom: 23px;
+	white-space: normal !important;
+  background: $color-background;
+  font-size: 15px;
+}
 
-  li {
-    list-style-type: none;
-  }
+ul {
+	list-style-type: none;
+	padding: 0px;
+	margin: 0px 0px 0px 26px;
+}
 
-  .json-item {
-    @include clear;
-  }
+li {
+	position: relative;
+  color: $color-white;
+}
 
-  .json-object {
-    @include clear;
-    display: inline;
-    &::before {
-      content: '{';
-    }
-    &::after {
-      content: '}';
-    }
-  }
+.hoverable {
+	transition: background-color .2s ease-out 0s;
+	-webkit-transition: background-color .2s ease-out 0s;
+	display: inline-block;
+}
 
-  .json-array {
-    @include clear;
-    &::before {
-      content: '[';
-      float: left;
-    }
-    &::after {
-      content: ']';
-    }
-  }
+.hovered {
+	transition-delay: .2s;
+	-webkit-transition-delay: .2s;
+}
+
+.selected {
+	outline-style: solid;
+	outline-width: 1px;
+	outline-style: dotted;
+}
+
+.collapsed>.collapsible {
+	display: none;
+}
+
+.ellipsis {
+	display: none;
+}
+
+.collapsed>.ellipsis {
+	display: inherit;
+}
+
+.collapser {
+	position: absolute;
+	top: 1px;
+	left: -1.5em;
+	cursor: default;
+	user-select: none;
+	-webkit-user-select: none;
+}
+
+body {
+  white-space: pre;
+  font-family: monospace;
+}
+
+.property {
+  font-weight: bold;
+}
+
+.type-null {
+  color: gray;
+}
+
+.type-boolean {
+  color: firebrick;
+}
+
+.type-number {
+  color: $color-purple;
+}
+
+.type-null {
+  color: $color-orange;
+}
+
+.type-string {
+  color: $color-green;
+}
+
+.callback-function {
+  color: gray;
+}
+
+.collapser {
+  color: #596273;
+}
+.collapser:after {
+  content: "-";
+}
+
+.collapsed > .collapser:after {
+  content: "+";
+}
+
+.ellipsis:after {
+  content: " … ";
+}
+
+.collapsible {
+  margin-left: 1em;
+}
+
+.hoverable {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 2px;
+  padding-right: 2px;
+  border-radius: 2px;
+}
+
+.hovered {
+  background-color: rgba(235, 238, 249, 1);
+}
+
+.collapser {
+  padding-right: 6px;
+  padding-left: 6px;
 }

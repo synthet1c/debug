@@ -7,6 +7,7 @@ export const data = {
   user: {
     name: 'andrew',
     age: 32,
+    nully: null,
     languages: [
       { name: 'javascript' },
       { name: 'php' },
