@@ -15,7 +15,14 @@ export const data = {
     truthy: true,
     falsey: false,
     languages: [
-      { name: 'javascript', time: 2, array: ['one', 'two'] },
+      {
+        name: 'javascript',
+        time: 2,
+        array: [
+          'one',
+          'two'
+        ]
+      },
       { name: 'php' },
       { name: 'node' },
       { name: 'laravel' },
@@ -205,11 +212,12 @@ const jsonObject = function jsonObject(props) {
   return (
     <div className="hoverable">
       <JsonName {...props} />
-      <div className="collapser" onClick={collapse}></div>&#123;<span className="ellipsis" onClick={collapse}></span>
+      <div className="collapser" onClick={collapse}></div>
+      <span className="bracket" onClick={collapse}>&#123;</span><span className="ellipsis" onClick={collapse}></span>
       <ul className="obj collapsible">
         {createPathHTML(value, true)}
       </ul>
-      &#125;,
+      <span className="bracket" onClick={collapse}>&#125;</span>,
     </div>
   )
 }
@@ -221,12 +229,13 @@ const jsonArray = function jsonArray(props) {
   return (
     <div className="hoverable">
       <JsonName {...props} />
-      <div className="collapser" onClick={collapse}></div><span className="">[</span>
+      <div className="collapser" onClick={collapse}></div>
+      <span className="bracket" onClick={collapse}>[</span>
       <span className="ellipsis ellipsis-array" onClick={collapse} data-length={value.length}></span>
       <ul className="array collapsible">
         {createPathHTML(value, false)}
       </ul>
-      ],
+      <span className="bracket" onClick={collapse}>]</span>,
     </div>
   )
 }

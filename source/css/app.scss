@@ -77,14 +77,13 @@ li {
 
   // border: 1px solid transparent;
 
-  &.over {
+  &.over > .hoverable > .bracket {
     // background: $color-background-hover;
     // border: 1px solid $color-background-hover-opaque;
-    //
-    color: lighten($color-white, 10%);
-    .property {
-      color: lighten($color-white, 10%);
-    }
+
+    color: $color-blue;
+    font-weight: bolder;
+    cursor: pointer;
   }
   &.collapsed {
     .collapsible {
@@ -120,8 +119,9 @@ li {
 	user-select: none;
 	-webkit-user-select: none;
   &:hover {
-    color: $color-white;
-    font-weight: bold;
+    color: $color-blue;
+    font-weight: bolder;
+    cursor: pointer;
   }
 }
 
@@ -171,6 +171,7 @@ body {
 
 .ellipsis:after {
   content: " … ";
+  cursor: pointer;
 }
 
 .ellipsis-array::after {
