@@ -4,6 +4,14 @@
   clear: both;
 }
 
+@mixin hide {
+  display: none;
+}
+
+@mixin show {
+  display: inline;
+}
+
 $color-teal: #56b6c2;
 $color-purple: #c678dd;
 $color-blue: #61afef;
@@ -11,20 +19,26 @@ $color-orange: #d19a66;
 $color-green: #98c379;
 $color-background: #282c34;
 $color-background-hover: rgba(153, 187, 255, 0.04);
+$color-background-hover-opaque: rgba(153, 187, 255, 0.08);
 $color-white: #abb2bf;
 $color-red: #e06c75;
+$color-muted: #596273;
 
 body {
 	margin-bottom: 23px;
 	white-space: normal !important;
   background: $color-background;
-  font-size: 15px;
+  font-size: 1em;
+}
+
+.json {
+  padding: 1em;
 }
 
 ul {
 	list-style-type: none;
 	padding: 0px;
-	margin: 0px 0px 0px 26px;
+	margin: 0px 0px 0px 16px;
 }
 
 li {
@@ -49,12 +63,49 @@ li {
 	outline-style: dotted;
 }
 
-.collapsed>.collapsible {
-	display: none;
+.type {
+  @include hide;
+  color: $color-teal;
+}
+
+.colon {
+  margin-right: 4px;
+}
+
+
+.json-item {
+
+  // border: 1px solid transparent;
+
+  &.over {
+    // background: $color-background-hover;
+    // border: 1px solid $color-background-hover-opaque;
+    //
+    color: lighten($color-white, 10%);
+    .property {
+      color: lighten($color-white, 10%);
+    }
+  }
+  &.collapsed {
+    .collapsible {
+      @include hide;
+    }
+    .ellipsis {
+      @include show;
+    }
+    .type {
+      @include show;
+    }
+  }
 }
 
 .ellipsis {
-	display: none;
+  @include hide;
+  color: $color-muted;
+  &:hover {
+    color: $color-white;
+    font-weight: bold;
+  }
 }
 
 .collapsed>.ellipsis {
@@ -68,6 +119,10 @@ li {
 	cursor: default;
 	user-select: none;
 	-webkit-user-select: none;
+  &:hover {
+    color: $color-white;
+    font-weight: bold;
+  }
 }
 
 body {
@@ -84,7 +139,7 @@ body {
 }
 
 .type-boolean {
-  color: firebrick;
+  color: $color-red;
 }
 
 .type-number {
@@ -104,19 +159,24 @@ body {
 }
 
 .collapser {
-  color: #596273;
+  color: $color-muted;
 }
 .collapser:after {
   content: "-";
 }
 
-.collapsed > .collapser:after {
+.collapsed .collapser:after {
   content: "+";
 }
 
 .ellipsis:after {
   content: " … ";
 }
+
+.ellipsis-array::after {
+  content: attr(data-length)
+}
+
 
 .collapsible {
   margin-left: 1em;

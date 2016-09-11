@@ -12,8 +12,10 @@ export const data = {
     name: 'andrew',
     age: 32,
     nully: null,
+    truthy: true,
+    falsey: false,
     languages: [
-      { name: 'javascript' },
+      { name: 'javascript', time: 2, array: ['one', 'two'] },
       { name: 'php' },
       { name: 'node' },
       { name: 'laravel' },
@@ -123,11 +125,14 @@ export const createPath = (path) => {
 const type = (thing) => {
   if (thing === null) {
     return 'null'
-  } else if (thing === undefined) {
+  }
+  else if (thing === undefined) {
     return 'undefined'
-  } else if (Array.isArray(thing)) {
+  }
+  else if (Array.isArray(thing)) {
     return 'array'
-  } else {
+  }
+  else {
     return typeof(thing)
   }
 }
@@ -145,13 +150,34 @@ const Collapsible = (fn) => {
     },
     collapse() {
       this.setState({
-        collapsed: !!this.state.collapsed
+        collapsed: !this.state.collapsed
       })
       console.log('collapse')
     },
+    mouseOver(e) {
+      this.setState({
+        ...this.state,
+        over: true
+      })
+      e.stopPropagation()
+    },
+    mouseOut(e) {
+      this.setState({
+        ...this.state,
+        over: false
+      })
+      e.stopPropagation()
+    },
     render() {
+      const classes = (
+        'json-item'
+        + (this.state.collapsed ? ' collapsed' : ' open')
+        + (this.state.over ? ' over' : '')
+      )
       return (
-        <li className={(this.state.collapsed) ? 'collapsed' : 'open'}>
+        <li className={classes}
+          onMouseOver={this.mouseOver}
+          onMouseOut={this.mouseOut}>
           {fn({
             ...this.props,
             collapse: this.collapse,
@@ -177,9 +203,9 @@ const JsonName = function({ name, keepName }) {
 const jsonObject = function jsonObject(props) {
   const { name, value, keepName, collapse } = props
   return (
-    <div className="hoverable" onClick={collapse}>
+    <div className="hoverable">
       <JsonName {...props} />
-      <div className="collapser"></div>&#123;<span className="ellipsis"></span>
+      <div className="collapser" onClick={collapse}></div>&#123;<span className="ellipsis" onClick={collapse}></span>
       <ul className="obj collapsible">
         {createPathHTML(value, true)}
       </ul>
@@ -187,24 +213,25 @@ const jsonObject = function jsonObject(props) {
     </div>
   )
 }
-
+const nully = null
 const JsonObject = Collapsible(jsonObject)
 
-const JsonArray = function(props) {
-  const { name, value, keepName } = props
+const jsonArray = function jsonArray(props) {
+  const { name, value, keepName, collapse } = props
   return (
-    <li>
-      <div className="hoverable">
-        <JsonName {...props} />
-        <div className="collapser"></div>[<span className="ellipsis">Array[{value.length}]</span>
-        <ul className="array collapsible">
-          {createPathHTML(value, false)}
-        </ul>
-        ],
-      </div>
-    </li>
+    <div className="hoverable">
+      <JsonName {...props} />
+      <div className="collapser" onClick={collapse}></div><span className="">[</span>
+      <span className="ellipsis ellipsis-array" onClick={collapse} data-length={value.length}></span>
+      <ul className="array collapsible">
+        {createPathHTML(value, false)}
+      </ul>
+      ],
+    </div>
   )
 }
+
+const JsonArray = Collapsible(jsonArray)
 
 const JsonString = function(props) {
   const { name, value, keepName } = props
@@ -225,6 +252,18 @@ const JsonNull = function(props) {
       <div className="hoverable">
         <JsonName {...props} />
         <span className={'type-' + type(value)}>null</span>
+      </div>,
+    </li>
+  )
+}
+
+const JsonBoolean = function({ name, value }) {
+  return (
+    <li>
+      <div className="hoverable">
+        <span className="property">{name}</span>
+        <span className="colon">:</span>
+        <span className={'type-boolean'}>{value.toString()}</span>
       </div>,
     </li>
   )
@@ -273,6 +312,14 @@ export const createPathHTML = (tree, keepName = true) => {
       case 'null':
         return (
           <JsonNull
+            name={name}
+            value={value}
+            keepName={keepName}
+            key={ii++} />
+        )
+      case 'boolean':
+        return (
+          <JsonBoolean
             name={name}
             value={value}
             keepName={keepName}
