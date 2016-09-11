@@ -78,9 +78,9 @@ export const flattenTree = (tree) => {
 
 export const searchTree = (search, flatTree) => {
   const matches = flatTree
-    .filter(item => item.tail)
+    // .filter(item => item.tail)
     .reduce((acc, item) => {
-      return item.value.toString().match(search)
+      return item.key.toString().match(search)
         ? acc.concat(item)
         : acc
     }, [])
@@ -101,8 +101,6 @@ export const findPath = flatTree => item => {
   ret.push(flatTree[0])
   return ret.reverse()
 }
-
-// const flatTree = flattenTree(data)
 
 export const createPath = (path) => {
   const ret = {}
@@ -134,6 +132,37 @@ const type = (thing) => {
   }
 }
 
+const Collapsible = (fn) => {
+  return React.createClass({
+    displayName: fn.name,
+    getInitialState() {
+      return {
+        collapsed: false
+      }
+    },
+    componentDidMount(props) {
+      this.props = props
+    },
+    collapse() {
+      this.setState({
+        collapsed: !!this.state.collapsed
+      })
+      console.log('collapse')
+    },
+    render() {
+      return (
+        <li className={(this.state.collapsed) ? 'collapsed' : 'open'}>
+          {fn({
+            ...this.props,
+            collapse: this.collapse,
+            collapsed: this.state.collapsed
+          })}
+        </li>
+      )
+    }
+  })
+}
+
 const JsonName = function({ name, keepName }) {
   return !keepName
     ? null
@@ -145,21 +174,21 @@ const JsonName = function({ name, keepName }) {
       )
 }
 
-const JsonObject = function(props) {
-  const { name, value, keepName } = props
+const jsonObject = function jsonObject(props) {
+  const { name, value, keepName, collapse } = props
   return (
-    <li>
-      <div className="hoverable">
-        <JsonName {...props} />
-        <div className="collapser"></div>&#123;<span className="ellipsis"></span>
-        <ul className="obj collapsible">
-          {createPathHTML(value, true)}
-        </ul>
-        &#125;,
-      </div>
-    </li>
+    <div className="hoverable" onClick={collapse}>
+      <JsonName {...props} />
+      <div className="collapser"></div>&#123;<span className="ellipsis"></span>
+      <ul className="obj collapsible">
+        {createPathHTML(value, true)}
+      </ul>
+      &#125;,
+    </div>
   )
 }
+
+const JsonObject = Collapsible(jsonObject)
 
 const JsonArray = function(props) {
   const { name, value, keepName } = props
@@ -294,7 +323,11 @@ const defineEvents = ({ dispatch, props }) => ({
 
 const defineProps = ({ state, props }) => {
   console.log('defineProps', { state })
+  const flatTree = flattenTree(state)
+  const path = searchTree('languages', flatTree)
+
   return ({
+    paths: { paths: path.map(createPath) },
     tree: state,
     items: state[props.type],
     type: props.type
@@ -310,9 +343,11 @@ console.log({ Filter })
 
 export default Filter
 
-// const path = searchTree('php', flatTree)
-// console.log({
-//   flatTree,
-//   searchTree: searchTree('javascript', flatTree),
-//   createPath: path.map(createPath)
-// })
+const flatTree = flattenTree(data)
+const path = searchTree('name', flatTree)
+
+console.log({
+  flatTree,
+  path,
+  createPath: path.map(createPath)
+})
