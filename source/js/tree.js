@@ -28,7 +28,7 @@ export const data = {
       { name: 'laravel' },
     ],
     hobbies: [
-      { name: 'javascript' },
+      { name: 'javascript', array: ['another'] },
     ]
   }
 }
@@ -113,7 +113,11 @@ export const findPath = flatTree => item => {
 
 export const createPath = (path) => {
   const ret = {}
-  path.reduce((acc, item) => {
+  path.reduce((acc, item, ii, arr) => {
+    const isLast = ii === arr.length - 1
+    if (isLast) {
+      return acc[item.key] = item.children || item.value
+    }
     switch (item.type) {
       case 'object':
         acc[item.key] = {}
@@ -127,6 +131,49 @@ export const createPath = (path) => {
     return acc[item.key]
   }, ret)
   return ret
+}
+
+const hasOmnProperty = Object.hasOmnProperty
+
+
+export const mergePaths = (paths) => {
+  const ret = {}
+  const go = (left, right) => {
+    for (let key in right) {
+      if (!hasOwnProperty.call(left, key)) {
+        if (Array.isArray(left[key])) {
+          left[key] = left[key].concat(right[key])
+        } else{
+          left[key] = right[key]
+        }
+      } else {
+        return go(left[key], right[key])
+      }
+    }
+  }
+  paths.forEach(path => go(ret, path))
+  return ret;
+}
+
+// export const mergePaths = (paths) => {
+//   const ret = {}
+//   paths.reduce(mergeObjects, ret)
+//   return ret
+// }
+
+export const mergeObjects = (left, right) => {
+  for (let key in right) {
+    if (!hasOwnProperty.call(left, key)) {
+      if (Array.isArray(left[key])) {
+        left[key] = left[key].concat(right[key])
+      } else{
+        left[key] = right[key]
+      }
+    } else {
+      return mergeObjects(left[key], right[key])
+    }
+  }
+  return left
 }
 
 const type = (thing) => {
@@ -380,11 +427,11 @@ const defineEvents = ({ dispatch, props }) => ({
 const defineProps = ({ state, props }) => {
   console.log('defineProps', { state })
   const flatTree = flattenTree(state)
-  const path = searchTree('languages', flatTree)
+  const path = searchTree('array', flatTree)
 
   return ({
-    paths: { paths: path.map(createPath) },
-    tree: state,
+    tree: { paths: mergePaths(path.map(createPath)) },
+    // tree: state,
     items: state[props.type],
     type: props.type
   })
@@ -400,7 +447,7 @@ console.log({ Filter })
 export default Filter
 
 const flatTree = flattenTree(data)
-const path = searchTree('name', flatTree)
+const path = searchTree('languages', flatTree)
 
 console.log({
   flatTree,
