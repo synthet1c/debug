@@ -8,6 +8,7 @@ import { reduceData } from './utils'
 import { Filter } from './tree'
 import { Store } from './reflex/Store'
 import { actions } from './actions'
+import { Parent, Child } from './components/Parent'
 
 // ReactDOM.render(
 //   <Container store={store} />,
@@ -18,3 +19,40 @@ ReactDOM.render(
   <Filter store={data} type='user' />,
   document.getElementById('app')
 )
+
+// class State {
+//   constructor(value) {
+//     this.__value = value
+//   }
+//   static of(val) {
+//     return new State(val)
+//   }
+//   map(fn) {
+//     return State.of(fn(this.__value))
+//   }
+// }
+//
+// const theStore = (data) => {
+//
+//   let state = new State(data)
+//   const listeners = []
+//
+//   return {
+//     dispatch: fn => {
+//       const newState = state.map(fn)
+//       listeners.forEach(listener => listener(newState))
+//       return newState
+//     },
+//     subscribe: fn => listeners.push(fn),
+//     getState: () => State.of(this.__value)
+//   }
+// }
+//
+// ReactDOM.render(
+//   <Parent color='blue' store={theStore(data)}>
+//     <div>
+//       <Child />
+//     </div>
+//   </Parent>,
+//   document.getElementById('app')
+// )
