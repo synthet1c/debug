@@ -1,14 +1,14 @@
 import '../css/app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import App from './components/App'
+// import App from './components/App'
 import { data } from './data'
 import { Container } from './reflex'
 import { reduceData } from './utils'
 import { Filter } from './tree'
 import { Store } from './reflex/Store'
 import { actions } from './actions'
-import { Parent, Child } from './components/Parent'
+// import { Parent, Child } from './components/Parent'
 
 // ReactDOM.render(
 //   <Container store={store} />,
@@ -16,7 +16,9 @@ import { Parent, Child } from './components/Parent'
 // )
 
 ReactDOM.render(
-  <Filter store={data} type='user' />,
+  <Container store={Store(data, actions)}>
+    <Filter type='user' />
+  </Container>,
   document.getElementById('app')
 )
 

@@ -1,15 +1,24 @@
 import React from 'react'
 import { blueLog } from '../utils'
 import { App } from '../components/App'
+import storeShape from './storeShape'
 
 export default class Container extends React.Component {
   constructor(props = {}) {
     super(props)
-    this.store = props.store
-    this.state = this.store.getState()
+    this.state = {
+      store: this.props.store
+    }
   }
+
+  getChildContext() {
+    return {
+      store: this.state.store
+    }
+  }
+
   componentDidMount() {
-    this.store.subscribe((state, action) => {
+    this.props.store.subscribe((state, action) => {
       this.setState(state)
       blueLog('didMount', { action, state })
     })
@@ -18,10 +27,10 @@ export default class Container extends React.Component {
     blueLog('componentWillReceiveProps', this, nextProps)
   }
   render() {
-    return (
-      <div className='Container'>
-        <App />
-      </div>
-    )
+    return <div>{this.props.children}</div>
   }
+}
+
+Container.childContextTypes = {
+  store: storeShape.isRequired
 }

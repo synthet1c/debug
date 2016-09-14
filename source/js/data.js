@@ -7,14 +7,23 @@ export const data = {
     name: 'andrew',
     age: 32,
     nully: null,
+    truthy: true,
+    falsey: false,
     languages: [
-      { name: 'javascript' },
+      {
+        name: 'javascript',
+        time: 2,
+        array: [
+          'one',
+          'two'
+        ]
+      },
       { name: 'php' },
       { name: 'node' },
       { name: 'laravel' },
     ],
     hobbies: [
-      { name: 'javascript' },
+      { name: 'javascript', array: ['another'] },
     ]
   }
 }

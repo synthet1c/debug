@@ -7,34 +7,6 @@ import {
   isObject
 } from './utils'
 
-export const data = {
-  user: {
-    name: 'andrew',
-    age: 32,
-    nully: null,
-    truthy: true,
-    falsey: false,
-    languages: [
-      {
-        name: 'javascript',
-        time: 2,
-        array: [
-          'one',
-          'two'
-        ]
-      },
-      { name: 'php' },
-      { name: 'node' },
-      { name: 'laravel' },
-    ],
-    hobbies: [
-      { name: 'javascript', array: ['another'] },
-    ]
-  }
-}
-
-export const store = Store(data, actions)
-
 export const flattenTree = (tree) => {
   const ret = []
   let id = -1
@@ -417,9 +389,8 @@ export const JsonFilter = ({ tree, filter }) => (
 
 const defineEvents = ({ dispatch, props }) => ({
   filter: event => {
-    dispatch(FILTER_BY_TYPE, {
-      search: event.target.value,
-      type: props.type,
+    dispatch(FILTER_LIST, {
+      search: event.target.value
     })
   }
 })
@@ -440,17 +411,17 @@ const defineProps = ({ state, props }) => {
 export const Filter = component(
   defineEvents,
   defineProps
-)(JsonFilter)(store)
+)(JsonFilter)
 
 console.log({ Filter })
 
 export default Filter
 
-const flatTree = flattenTree(data)
-const path = searchTree('languages', flatTree)
-
-console.log({
-  flatTree,
-  path,
-  createPath: path.map(createPath)
-})
+// const flatTree = flattenTree(data)
+// const path = searchTree('languages', flatTree)
+//
+// console.log({
+//   flatTree,
+//   path,
+//   createPath: path.map(createPath)
+// })
