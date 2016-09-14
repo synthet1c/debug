@@ -13,40 +13,31 @@ export const flattenTree = (tree) => {
   const go = (node, parent) => {
     for (let key in node) {
       id = id + 1
-      const leaf = node[key]
-      if (isArray(leaf)) {
-        ret.push({
-          type: 'array',
-          id,
-          value: 'array',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
+      const children = node[key]
+
+      const item = {
+        id,
+        key,
+        parent,
+        children,
       }
-      else if (isObject(leaf)) {
-        ret.push({
-          type: 'object',
-          id: id,
-          value: 'object',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
+
+      if (isArray(children)) {
+        item.type = item.value = 'array'
+        item.tail = false
+        go(children, id)
+      }
+      else if (isObject(children)) {
+        item.type = item.value = 'object'
+        item.tail = false
+        go(children, id)
       } else {
-        ret.push({
-          type: typeof(leaf),
-          id: id,
-          value: leaf,
-          key,
-          tail: true,
-          parent
-        })
+        item.type = typeof(children)
+        item.value = children
+        item.tail = true
       }
+
+      ret.push(item)
     }
   }
   go(tree, id)
@@ -75,7 +66,7 @@ export const searchTree = (search, flatTree) => {
         if (searchValue !== '') {
 
           if (value === 'array') {
-            console.log('isArray', findValueInChild(searchValue, item.children))
+            // console.log('isArray', findValueInChild(searchValue, item.children))
           }
           else if (value.match(searchValue)) {
             return acc.concat(item)
