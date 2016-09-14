@@ -15,6 +15,8 @@ import { actions } from './actions'
 //   document.getElementById('app')
 // )
 
+console.log({ data })
+
 ReactDOM.render(
   <Container store={Store(__data, actions)}>
     <Filter type='user' />

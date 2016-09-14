@@ -12,41 +12,32 @@ export const flattenTree = (tree) => {
   let id = -1
   const go = (node, parent) => {
     for (let key in node) {
-      id = id + 1
-      const leaf = node[key]
-      if (isArray(leaf)) {
-        ret.push({
-          type: 'array',
-          id,
-          value: 'array',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
+      id += 1
+      const children = node[key]
+
+      const item = {
+        id,
+        key,
+        parent,
+        children,
       }
-      else if (isObject(leaf)) {
-        ret.push({
-          type: 'object',
-          id: id,
-          value: 'object',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
+
+      if (isArray(children)) {
+        item.type = item.value = 'array'
+        item.tail = false
+        go(children, id)
+      }
+      else if (isObject(children)) {
+        item.type = item.value = 'object'
+        item.tail = false
+        go(children, id)
       } else {
-        ret.push({
-          type: typeof(leaf),
-          id: id,
-          value: leaf,
-          key,
-          tail: true,
-          parent
-        })
+        item.type = typeof(children)
+        item.value = children
+        item.tail = true
       }
+
+      ret.push(item)
     }
   }
   go(tree, id)
@@ -58,12 +49,34 @@ export const flattenTree = (tree) => {
 // })
 
 export const searchTree = (search, flatTree) => {
+
+  const match = search.match(/([^:=]+)(?:[:=])*(.*)/)
+  const searchKey = match ? match[1].trim() : ''
+  const searchValue = match ? match[2].trim() : ''
+
   const matches = flatTree
-    // .filter(item => item.tail)
     .reduce((acc, item) => {
-      return item.key.toString().match(search)
-        ? acc.concat(item)
-        : acc
+
+      const key = item.key.toString()
+      const value = item.value.toString()
+
+      // does the current item key match the search param
+      if (key.match(searchKey)) {
+        //  does the search have a value
+        if (searchValue !== '') {
+
+          if (value === 'array') {
+            console.log('isArray', findValueInChild(searchValue, item.children))
+          }
+          else if (value.match(searchValue)) {
+            return acc.concat(item)
+          }
+        }
+        else {
+          return acc.concat(item)
+        }
+      }
+      return acc
     }, [])
 
   const paths = matches.map(findPath(flatTree))
@@ -71,6 +84,24 @@ export const searchTree = (search, flatTree) => {
   console.log({ matches, paths })
 
   return paths
+}
+
+const TREE_DEPTH = 2
+
+const findValueInChild = (value, tree) => {
+  const go = (tree, level = 0) => {
+    if (level++ > TREE_DEPTH) {
+      return false
+    }
+    if (Array.isArray(tree)) {
+      return tree.some(item => go(item, level))
+    }
+    else if (isObject(tree)) {
+      return Object.getOwnPropertyNames(tree).some(key => go(tree[key], level))
+    }
+    return !!tree.toString().match(value)
+  }
+  return go(tree)
 }
 
 export const findPath = flatTree => item => {
@@ -396,13 +427,21 @@ const defineEvents = ({ dispatch, props }) => ({
 })
 
 const defineProps = ({ state, props }) => {
+
   console.log('defineProps', { state })
-  const flatTree = flattenTree(state)
-  const path = searchTree(state.filter || '', flatTree)
+
+  let paths = {}
+
+  if (state.filter) {
+    const flatTree = flattenTree(state)
+    console.log('filter', state.filter)
+    const path = searchTree(state.filter || '', flatTree)
+    paths = mergePaths(path.map(createPath))
+  }
 
   return {
     tree: state.filter
-      ? mergePaths(path.map(createPath))
+      ? paths
       : state,
     items: state[props.type],
     type: props.type
