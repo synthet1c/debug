@@ -398,14 +398,15 @@ const defineEvents = ({ dispatch, props }) => ({
 const defineProps = ({ state, props }) => {
   console.log('defineProps', { state })
   const flatTree = flattenTree(state)
-  const path = searchTree('array', flatTree)
+  const path = searchTree(state.filter || '', flatTree)
 
-  return ({
-    tree: { paths: mergePaths(path.map(createPath)) },
-    // tree: state,
+  return {
+    tree: state.filter
+      ? mergePaths(path.map(createPath))
+      : state,
     items: state[props.type],
     type: props.type
-  })
+  }
 }
 
 export const Filter = component(

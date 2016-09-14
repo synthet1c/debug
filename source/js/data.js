@@ -2,7 +2,7 @@ import { reduceData } from './utils'
 import { actions } from './actions'
 import { flattenTree } from './tree'
 
-export const data = {
+export const __data = {
   user: {
     name: 'andrew',
     age: 32,
@@ -28,9 +28,9 @@ export const data = {
   }
 }
 
-data.user.languages[10] = { name: 'scss' }
+// data.user.languages[10] = { name: 'scss' }
 
-export const __data = {
+export const data = {
   "SCRIPT_NAME": {
     "value": "/index.php",
     "nocache": false,
@@ -3617,5 +3617,71 @@ export const __data = {
   }
 }
 
-const flatData = flattenTree(data)
-console.log({ flatData })
+const minifyObject = (data) => {
+
+  const go = (data) => {
+    for (let key in data) {
+      if (typeof data[key] === 'object' && data[key].resArr) {
+        data[key] === data[key].resArr
+      }
+      else if (typeof data[key] === 'object' && data[key].value) {
+        data[key] === data[key].value
+      }
+      else if (Array.isArray(data[key])) {
+
+      }
+    }
+  }
+  return go(data)
+}
+
+const traverse = (data) => {
+  const go = (node) => {
+    for (let key in node) {
+      if (node[key] != null) {
+        if (typeof node[key] !== 'undefined') {
+          if (typeof(node[key].value) !== 'undefined' && typeof node[key].scope !== 'undefined') {
+            node[key] = node[key].value
+          } else if (typeof node[key].resArr !== 'undefined') {
+            node[key] = node[key].resArr
+          } else {
+            node[key] = go(node[key])
+          }
+        }
+        if (Array.isArray(node[key])) {
+          node[key] = node[key].map(go)
+        }
+      }
+      return node
+    }
+  }
+  return go(data)
+}
+
+function setObjects(obj) {
+  for (var key in obj) {
+    var value = (obj[key] && typeof obj[key].value !== 'undefined')
+      ? obj[key].value
+      : obj[key]
+    if (value != null) {
+      if (value.resArr) {
+        obj[key] = value.resArr
+      } else if (Array.isArray(value)) {
+        obj[key] = setObjects(value.slice())
+      } else if (typeof value === 'object') {
+        obj[key] = setObjects(Object.assign({}, value))
+      } else {
+        obj[key] = value
+      }
+    } else {
+      obj[key] = obj[key].value
+    }
+  }
+  return obj
+}
+
+
+
+console.log('traverse', setObjects(data))
+
+export const flatData = flattenTree(data)
