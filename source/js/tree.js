@@ -53,6 +53,30 @@ export const flattenTree = (tree) => {
   return ret
 }
 
+const trampoline = (fn) => {
+  let result = fn()
+  while (result instanceof Function) {
+    result = result()
+  }
+  return result
+}
+
+const recursiveData = [0, 1, 2, Math.PI]
+
+const sum = (total, first, ...rest) => {
+  const go = () => {
+    total += first
+    console.log(total)
+    if (rest.length) {
+      return sum(total, ...rest)
+    }
+    return total
+  }
+  return go
+}
+
+trampoline(sum(0, ...recursiveData))
+
 // console.log({
 //   flattenTree: flattenTree(data)
 // })
@@ -164,6 +188,29 @@ export const mergePaths = (paths) => {
     }
   }
   paths.forEach(path => go(ret, path))
+  return ret;
+}
+
+export const R_mergePaths = (pathArr) => {
+  const ret = {}
+  const go = (left, right) => {
+    for (let key in right) {
+      if (!hasOwnProperty.call(left, key)) {
+        if (Array.isArray(left[key])) {
+          left[key] = left[key].concat(right[key])
+        } else{
+          left[key] = right[key]
+        }
+      } else {
+        return go(left[key], right[key])
+      }
+    }
+    return left
+  }
+  const result = pathArr.reduce(go, ret)
+
+  console.log({ result, ret })
+
   return ret;
 }
 
@@ -441,11 +488,12 @@ const defineProps = ({ state, props }) => {
 
   let paths = {}
 
-  if (state.filter) {
+  if (state.filter && state.filter.length > 2) {
     const flatTree = flattenTree(state)
     console.log('filter', state.filter)
     const path = searchTree(state.filter || '', flatTree)
-    paths = mergePaths(path.map(createPath))
+    // paths = mergePaths(path.map(createPath))
+    paths = R_mergePaths(path.map(createPath))
   }
 
   return {

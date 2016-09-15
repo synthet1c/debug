@@ -18,16 +18,16 @@ export const component = (...internals) => fn => {
       this.setState(this.context.store.getState())
       this.context.store.subscribe((state, action) => {
         this.setState(state)
-        blueLog('component:subscribe', { action, state })
+        // blueLog('component:subscribe', { action, state })
       })
       pinkLog('componentDidMount', this)
     },
     componentWillReceiveProps(nextProps) {
-      pinkLog('componentWillReceiveProps', this, nextProps)
+      // pinkLog('componentWillReceiveProps', this, nextProps)
     },
     shouldComponentUpdate() {
       const shouldUpdate = diff(this.state, this.context.store.getState())
-      pinkLog('shouldComponentUpdate', shouldUpdate)
+      // pinkLog('shouldComponentUpdate', shouldUpdate)
       return shouldUpdate
     },
     render() {

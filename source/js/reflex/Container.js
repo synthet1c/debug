@@ -20,11 +20,11 @@ export default class Container extends React.Component {
   componentDidMount() {
     this.props.store.subscribe((state, action) => {
       this.setState(state)
-      blueLog('didMount', { action, state })
+      // blueLog('didMount', { action, state })
     })
   }
   componentWillReceiveProps(nextProps) {
-    blueLog('componentWillReceiveProps', this, nextProps)
+    // blueLog('componentWillReceiveProps', this, nextProps)
   }
   render() {
     return <div>{this.props.children}</div>
