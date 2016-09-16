@@ -192,17 +192,21 @@ export const mergePaths = (paths) => {
 }
 
 export const R_mergePaths = (pathArr) => {
+
   const ret = {}
   const go = (left, right) => {
+    if (left == null || right == null || left === right) {
+      return left
+    }
     for (let key in right) {
-      if (!hasOwnProperty.call(left, key)) {
+      if (left[key] == null || !hasOwnProperty.call(left, key)) {
         if (Array.isArray(left[key])) {
           left[key] = left[key].concat(right[key])
         } else{
           left[key] = right[key]
         }
       } else {
-        return go(left[key], right[key])
+        left[key] = go(left[key], right[key])
       }
     }
     return left
@@ -489,9 +493,9 @@ const defineProps = ({ state, props }) => {
   let paths = {}
 
   if (state.filter && state.filter.length > 2) {
-    const flatTree = flattenTree(state)
+    const flatTree = flattenTree(state.data)
     console.log('filter', state.filter)
-    const path = searchTree(state.filter || '', flatTree)
+    const path = searchTree(state.filter, flatTree)
     // paths = mergePaths(path.map(createPath))
     paths = R_mergePaths(path.map(createPath))
   }
@@ -499,8 +503,7 @@ const defineProps = ({ state, props }) => {
   return {
     tree: state.filter
       ? paths
-      : state,
-    items: state[props.type],
+      : state.data,
     type: props.type
   }
 }

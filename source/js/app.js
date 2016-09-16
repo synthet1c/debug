@@ -18,7 +18,7 @@ import { actions } from './actions'
 console.log({ data })
 
 ReactDOM.render(
-  <Container store={Store(__data, actions)}>
+  <Container store={Store({data: { data }}, actions)}>
     <Filter type='user' />
   </Container>,
   document.getElementById('app')

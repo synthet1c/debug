@@ -24,7 +24,7 @@ export const __data = {
     ],
     hobbies: [
       { name: 'javascript', array: ['another'] },
-    ]
+    ],
   }
 }
 
