@@ -1,5 +1,5 @@
 import { fluent } from '../utils'
-
+const actionWorker = require('worker?inline!../worker.js')
 class State {
   constructor(value) {
     this.__value = Object.freeze(value)

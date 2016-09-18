@@ -2,7 +2,7 @@ import '../css/app.scss'
 import React from 'react'
 import ReactDOM from 'react-dom'
 // import App from './components/App'
-import { data, __data } from './data'
+import { data, __data, miniData } from './data'
 import { Container } from './reflex'
 import { reduceData } from './utils'
 import { Filter } from './tree'
@@ -15,10 +15,10 @@ import { actions } from './actions'
 //   document.getElementById('app')
 // )
 
-console.log({ data })
+console.log({ miniData })
 
 ReactDOM.render(
-  <Container store={Store({data: { data }}, actions)}>
+  <Container store={Store({data: miniData}, actions)}>
     <Filter type='user' />
   </Container>,
   document.getElementById('app')

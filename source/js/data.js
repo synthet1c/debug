@@ -31,6 +31,7 @@ export const __data = {
 // data.user.languages[10] = { name: 'scss' }
 
 export const data = {
+  data: {
   "SCRIPT_NAME": {
     "value": "/index.php",
     "nocache": false,
@@ -3616,23 +3617,25 @@ export const data = {
     "scope": "Smarty root"
   }
 }
+}
 
 const minifyObject = (data) => {
 
-  const go = (data) => {
+  const go = () => {
     for (let key in data) {
       if (typeof data[key] === 'object' && data[key].resArr) {
-        data[key] === data[key].resArr
+        data[key] = data[key].resArr
       }
       else if (typeof data[key] === 'object' && data[key].value) {
-        data[key] === data[key].value
+        data[key] = data[key].value
       }
       else if (Array.isArray(data[key])) {
-
+        data[key] = data[key].map(minifyObject)
       }
     }
+    return data
   }
-  return go(data)
+  return go
 }
 
 const traverse = (data) => {
@@ -3680,8 +3683,15 @@ function setObjects(obj) {
   return obj
 }
 
-
+const trampoline = (fn) => {
+  let result = fn()
+  while (result instanceof Function) {
+    result = result()
+  }
+  return result
+}
 
 console.log('traverse', setObjects(data))
 
 export const flatData = flattenTree(data)
+export const miniData = trampoline(minifyObject(data))

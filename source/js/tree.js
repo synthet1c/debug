@@ -2,6 +2,9 @@ import React from 'react'
 import { component } from './reflex'
 import { Store } from './reflex/Store'
 import { actions } from './actions'
+
+const myWorker = require('worker?inline!./worker.js')
+
 import {
   isArray,
   isObject
@@ -490,20 +493,20 @@ const defineProps = ({ state, props }) => {
 
   console.log('defineProps', { state })
 
-  let paths = {}
+  let tree = {}
 
   if (state.filter && state.filter.length > 2) {
     const flatTree = flattenTree(state.data)
     console.log('filter', state.filter)
     const path = searchTree(state.filter, flatTree)
     // paths = mergePaths(path.map(createPath))
-    paths = R_mergePaths(path.map(createPath))
+    tree = R_mergePaths(path.map(createPath))
+  } else {
+    tree = state.data
   }
 
   return {
-    tree: state.filter
-      ? paths
-      : state.data,
+    tree,
     type: props.type
   }
 }
@@ -525,3 +528,24 @@ export default Filter
 //   path,
 //   createPath: path.map(createPath)
 // })
+
+
+const work = (data) => {
+  const worker = new myWorker()
+
+  console.dir({ worker })
+
+  worker.postMessage({
+    data
+  })
+
+  worker.onmessage = (e) => {
+    console.log('onmessage:tree.js', e)
+  }
+
+  worker.addEventListener('message', (e) => {
+    console.log(e)
+  })
+}
+
+work(1)

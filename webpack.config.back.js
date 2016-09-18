@@ -1,7 +1,20 @@
 const webpack = require('webpack')
 
-const globalConfig = {
+module.exports = {
   context: __dirname,
+  entry: './source/js/app.js',
+  output: {
+    path: './dist',
+    filename: 'app.bundle.js',
+    publicPath: '/dist/'
+  },
+  devtool: 'source-map',
+  devServer: {
+    port: 3000,
+    historyApiFallback: {
+      index: 'index.html'
+    }
+  },
   module: {
     loaders: [
       {
@@ -30,46 +43,8 @@ const globalConfig = {
          ]
       },
     ]
-  }
-}
-
-const appConfig = Object.assign({}, {
-  entry: './source/js/app.js',
-  output: {
-    path: './dist',
-    filename: 'app.bundle.js',
-    publicPath: '/dist/'
-  },
-  devtool: 'source-map',
-  devServer: {
-    port: 3000,
-    historyApiFallback: {
-      index: 'index.html'
-    }
   },
   plugins: [
     new webpack.ContextReplacementPlugin(/moment[\/\\]locale$/, /^en$/)
   ]
-}, globalConfig)
-
-const workerConfig = Object.assign({}, {
-  entry: './source/js/worker.js',
-  output: {
-    path: './dist',
-    filename: 'worker.bundle.js',
-    publicPath: '/dist/',
-    target: 'webworker'
-  },
-  target: 'webworker',
-  devtool: 'source-map',
-  devServer: {
-    port: 3000,
-    historyApiFallback: {
-      index: 'index.html'
-    }
-  }
-}, globalConfig)
-
-module.exports = [
-  appConfig, workerConfig
-]
+};
