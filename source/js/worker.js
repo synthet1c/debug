@@ -1,7 +1,8 @@
 self.window = self
 const _ = require('ramda')
-const actions = require('./actions')
+const actions = require('./actions').actions
 const FILTER_LIST = 'FILTER_LIST'
+
 
 // const actions = {
 //   [FILTER_LIST]: ({ search }) => {}
@@ -10,10 +11,15 @@ const FILTER_LIST = 'FILTER_LIST'
 console.log(actions)
 
 
-onmessage = (e) => {
-  console.log('onmessage:worker.js', e)
-  const { type, data } = e.data
+onmessage = ({ data }) => {
+  const { action, state, rest, uid } = data
+
+  console.log('onmessage:worker.js',{ action, state, rest })
   postMessage({
-    result: data * 2
+    action,
+    uid,
+    state: (rest.length)
+      ? actions[action](...rest)([state])
+      : actions[action]([state])
   })
 }

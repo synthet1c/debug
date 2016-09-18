@@ -22,7 +22,9 @@ const products = {
     lens(type, recursiveFilter(fuzzySearch(search)))
   ),
   [RESET_FILTER]: lenses.products(identity),
-  [FILTER_LIST]: ({ search }) => lens('filter', set(search)),
+  [FILTER_LIST]: ({ search }) => {
+    return lens('filter', set(search))
+  },
 }
 
 

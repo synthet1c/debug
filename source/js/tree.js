@@ -494,7 +494,7 @@ const defineProps = ({ state, props }) => {
   console.log('defineProps', { state })
 
   let tree = {}
-
+  debugger
   if (state.filter && state.filter.length > 2) {
     const flatTree = flattenTree(state.data)
     console.log('filter', state.filter)
@@ -548,4 +548,4 @@ const work = (data) => {
   })
 }
 
-work(1)
+// work(1)
