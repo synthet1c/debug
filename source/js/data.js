@@ -3693,5 +3693,5 @@ const trampoline = (fn) => {
 
 console.log('traverse', setObjects(data))
 
-export const flatData = flattenTree(data)
+// export const flatData = flattenTree(data)
 export const miniData = trampoline(minifyObject(data))

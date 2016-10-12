@@ -3,58 +3,12 @@ import { component } from './reflex'
 import { Store } from './reflex/Store'
 import { actions } from './actions'
 
-const myWorker = require('worker?inline!./worker.js')
+// const myWorker = require('worker?inline!./worker.js')
 
 import {
   isArray,
   isObject
 } from './utils'
-
-export const flattenTree = (tree) => {
-  const ret = []
-  let id = -1
-  const go = (node, parent) => {
-    for (let key in node) {
-      id = id + 1
-      const leaf = node[key]
-      if (isArray(leaf)) {
-        ret.push({
-          type: 'array',
-          id,
-          value: 'array',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
-      }
-      else if (isObject(leaf)) {
-        ret.push({
-          type: 'object',
-          id: id,
-          value: 'object',
-          children: leaf,
-          key,
-          tail: false,
-          parent
-        })
-        go(leaf, id)
-      } else {
-        ret.push({
-          type: typeof(leaf),
-          id: id,
-          value: leaf,
-          key,
-          tail: true,
-          parent
-        })
-      }
-    }
-  }
-  go(tree, id)
-  return ret
-}
 
 const trampoline = (fn) => {
   let result = fn()
@@ -62,184 +16,6 @@ const trampoline = (fn) => {
     result = result()
   }
   return result
-}
-
-const recursiveData = [0, 1, 2, Math.PI]
-
-const sum = (total, first, ...rest) => {
-  const go = () => {
-    total += first
-    console.log(total)
-    if (rest.length) {
-      return sum(total, ...rest)
-    }
-    return total
-  }
-  return go
-}
-
-trampoline(sum(0, ...recursiveData))
-
-// console.log({
-//   flattenTree: flattenTree(data)
-// })
-
-export const searchTree = (search, flatTree) => {
-
-  const match = search.match(/([^:=]+)(?:[:=])*(.*)/)
-  const searchKey = match ? match[1].trim() : ''
-  const searchValue = match ? match[2].trim() : ''
-
-  const matches = flatTree
-    .reduce((acc, item) => {
-
-      const key = item.key.toString()
-      const value = item.value.toString()
-
-      // does the current item key match the search param
-      if (key.match(searchKey)) {
-        //  does the search have a value
-        if (searchValue !== '') {
-
-          if (value === 'array') {
-            console.log('isArray', findValueInChild(searchValue, item.children))
-          }
-          else if (value.match(searchValue)) {
-            return acc.concat(item)
-          }
-        }
-        else {
-          return acc.concat(item)
-        }
-      }
-      return acc
-    }, [])
-
-  const paths = matches.map(findPath(flatTree))
-
-  console.log({ matches, paths })
-
-  return paths
-}
-
-const TREE_DEPTH = 2
-
-const findValueInChild = (value, tree) => {
-  const go = (tree, level = 0) => {
-    if (level++ > TREE_DEPTH) {
-      return false
-    }
-    if (Array.isArray(tree)) {
-      return tree.some(item => go(item, level))
-    }
-    else if (isObject(tree)) {
-      return Object.getOwnPropertyNames(tree).some(key => go(tree[key], level))
-    }
-    return !!tree.toString().match(value)
-  }
-  return go(tree)
-}
-
-export const findPath = flatTree => item => {
-  var ret = []
-  while (item && item.id) {
-    ret.push(item)
-    item = flatTree[item.parent]
-  }
-  ret.push(flatTree[0])
-  return ret.reverse()
-}
-
-export const createPath = (path) => {
-  const ret = {}
-  path.reduce((acc, item, ii, arr) => {
-    const isLast = ii === arr.length - 1
-    if (isLast) {
-      return acc[item.key] = item.children || item.value
-    }
-    switch (item.type) {
-      case 'object':
-        acc[item.key] = {}
-        break
-      case 'array':
-        acc[item.key] = []
-        break
-      default:
-        acc[item.key] = item.value
-    }
-    return acc[item.key]
-  }, ret)
-  return ret
-}
-
-const hasOmnProperty = Object.hasOmnProperty
-
-
-export const mergePaths = (paths) => {
-  const ret = {}
-  const go = (left, right) => {
-    for (let key in right) {
-      if (!hasOwnProperty.call(left, key)) {
-        if (Array.isArray(left[key])) {
-          left[key] = left[key].concat(right[key])
-        } else{
-          left[key] = right[key]
-        }
-      } else {
-        return go(left[key], right[key])
-      }
-    }
-  }
-  paths.forEach(path => go(ret, path))
-  return ret;
-}
-
-export const R_mergePaths = (pathArr) => {
-
-  const ret = {}
-  const go = (left, right) => {
-    if (left == null || right == null || left === right) {
-      return left
-    }
-    for (let key in right) {
-      if (left[key] == null || !hasOwnProperty.call(left, key)) {
-        if (Array.isArray(left[key])) {
-          left[key] = left[key].concat(right[key])
-        } else{
-          left[key] = right[key]
-        }
-      } else {
-        left[key] = go(left[key], right[key])
-      }
-    }
-    return left
-  }
-  const result = pathArr.reduce(go, ret)
-
-  console.log({ result, ret })
-
-  return ret;
-}
-
-// export const mergePaths = (paths) => {
-//   const ret = {}
-//   paths.reduce(mergeObjects, ret)
-//   return ret
-// }
-
-export const mergeObjects = (left, right) => {
-  for (let key in right) {
-    if (!hasOwnProperty.call(left, key)) {
-      if (Array.isArray(left[key])) {
-        left[key] = left[key].concat(right[key])
-      } else{
-        left[key] = right[key]
-      }
-    } else {
-      return mergeObjects(left[key], right[key])
-    }
-  }
-  return left
 }
 
 const type = (thing) => {
@@ -346,7 +122,7 @@ const jsonArray = function jsonArray(props) {
       <span className="bracket" onClick={collapse}>[</span>
       <span className="ellipsis ellipsis-array" onClick={collapse} data-length={value.length}></span>
       <ul className="array collapsible">
-        {createPathHTML(value, false)}
+        {createPathHTML(value, true)}
       </ul>
       <span className="bracket" onClick={collapse}>]</span>,
     </div>
@@ -489,18 +265,78 @@ const defineEvents = ({ dispatch, props }) => ({
   }
 })
 
+function viewObj(obj, path) {
+  return path.length < 2
+    ? obj
+    : path
+      .slice(0, path.length - 1)
+      .reduce((acc, key) => {
+        return (acc[key])
+          ? acc[key]
+          : acc
+      }, obj)
+  }
+
+  function filterBy(obj, val) {
+
+   	val = val.split(/(\.|\[|\])/)
+    val.unshift('data')
+
+    function iter(o, r) {
+      return Object.keys(o).reduce(function (b, k) {
+        var temp = Array.isArray(b) ? [] : {}
+        if (k.toLowerCase().indexOf(val[val.length -1].toLowerCase()) !== -1) {
+          r[k] = o[k]
+          return true
+        }
+        if (o[k] !== null && typeof o[k] === 'object' && iter(o[k], temp)) {
+          r[k] = temp
+          return true
+        }
+        return b
+      }, false)
+    }
+
+    var result = {}
+    iter(viewObj(obj, val), result)
+    return result
+  }
+
+  function view(obj, path) {
+    path = path.split(/[\.|\[|\]]/)
+    console.log('path', path)
+    let level = 0
+    function iter(o, r){
+      if (o[path[level]]) {
+        r = Object.assign(r, o[path[level]])
+      }
+      else if (path[level].length < 2) {
+        return o
+      }
+      else {
+        Object.keys(o)
+          .filter(key => key.match(new RegExp(path[level])))
+          .forEach(key => {
+            r = Object.assign(r, o[key])
+          })
+      }
+      if (++level < path.length) {
+        return iter(r, {})
+      }
+      return r
+    }
+    const result = {}
+    return iter(obj, result)
+  }
+
 const defineProps = ({ state, props }) => {
 
   console.log('defineProps', { state })
 
   let tree = {}
-  debugger
   if (state.filter && state.filter.length > 2) {
-    const flatTree = flattenTree(state.data)
-    console.log('filter', state.filter)
-    const path = searchTree(state.filter, flatTree)
-    // paths = mergePaths(path.map(createPath))
-    tree = R_mergePaths(path.map(createPath))
+    // tree = filterBy(state.data, state.filter)
+    tree = view(state.data, state.filter)
   } else {
     tree = state.data
   }
@@ -520,32 +356,22 @@ console.log({ Filter })
 
 export default Filter
 
-// const flatTree = flattenTree(data)
-// const path = searchTree('languages', flatTree)
+// const work = (data) => {
+//   const worker = new myWorker()
 //
-// console.log({
-//   flatTree,
-//   path,
-//   createPath: path.map(createPath)
-// })
-
-
-const work = (data) => {
-  const worker = new myWorker()
-
-  console.dir({ worker })
-
-  worker.postMessage({
-    data
-  })
-
-  worker.onmessage = (e) => {
-    console.log('onmessage:tree.js', e)
-  }
-
-  worker.addEventListener('message', (e) => {
-    console.log(e)
-  })
-}
+//   console.dir({ worker })
+//
+//   worker.postMessage({
+//     data
+//   })
+//
+//   worker.onmessage = (e) => {
+//     console.log('onmessage:tree.js', e)
+//   }
+//
+//   worker.addEventListener('message', (e) => {
+//     console.log(e)
+//   })
+// }
 
 // work(1)
